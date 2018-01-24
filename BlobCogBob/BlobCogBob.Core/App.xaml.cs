@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlobCogBob.Core.ViewModels;
+using System;
 using System.Collections.Generic;
 
 using Xamarin.Forms;
@@ -11,7 +12,7 @@ namespace BlobCogBob.Core
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new MenusList());
+            MainPage = new NavigationPage(new MenusList { ViewModel = new MenusListViewModel() });
         }
     }
 }
