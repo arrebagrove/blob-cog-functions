@@ -39,7 +39,7 @@ namespace BlobCogBob.Core.ViewModels
 
                 foreach (var blob in blobListing)
                 {
-                    AllBlobs.Add(new MenuBlob { BlobName = blob.BlobName });
+                    AllBlobs.Add(new MenuBlob { BlobName = blob.BlobName, BlobUri = blob.BlobUri });
                 }
             }
             catch (Exception ex)

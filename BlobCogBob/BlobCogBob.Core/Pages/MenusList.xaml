@@ -10,7 +10,7 @@
                   IsRefreshing="{Binding IsRefreshing}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextCell Text="{Binding BlobName}" />
+                    <ImageCell ImageSource="{Binding BlobUri}" Text="{Binding BlobName}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Footer>

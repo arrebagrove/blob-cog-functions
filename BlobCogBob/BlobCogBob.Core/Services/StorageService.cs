@@ -12,6 +12,13 @@ using Xamarin.Forms;
 
 namespace BlobCogBob.Core
 {
+    enum StoragePermissionType
+    {
+        List,
+        Read,
+        Write
+    }
+
     public class StorageService
     {
         public async static Task<List<MenuBlob>> ListAllBlobs()
@@ -50,8 +57,10 @@ namespace BlobCogBob.Core
         {
             var cacheKey = "listCredentials";
 
+            StoragePermissionType.List.ToString();
+
             if (Barrel.Current.Exists(cacheKey) && !Barrel.Current.IsExpired(cacheKey))
-                return Barrel.Current.Get<StorageCredentials>(cacheKey);
+                return new StorageCredentials(Barrel.Current.Get<string>(cacheKey));
 
             var listToken = await FunctionService.GetContainerListSasToken().ConfigureAwait(false);
 
@@ -89,7 +98,7 @@ namespace BlobCogBob.Core
             var credentials = new StorageCredentials(storageToken);
             var expireIn = GetExpirationSpan(storageToken);
 
-            Barrel.Current.Add(cacheKey, credentials, expireIn);
+            Barrel.Current.Add<string>(cacheKey, storageToken, expireIn);
 
             return credentials;
         }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Xamarin.Forms;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+﻿using Xamarin.Forms;
 using CodeMill.VMFirstNav;
 using BlobCogBob.Core.ViewModels;
 
