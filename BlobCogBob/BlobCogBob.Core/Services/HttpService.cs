@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using Newtonsoft.Json;
 
 // Overall implementation thanks to Brandon Minnick
 // https://github.com/brminnick/AzureBlobStorageSampleApp/blob/master/AzureBlobStorageSampleApp/Services/Base/BaseHttpClientService.cs
+using System.Diagnostics;
 
 namespace BlobCogBob.Core.Services
 {
@@ -29,6 +29,7 @@ namespace BlobCogBob.Core.Services
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"**** ERROR: {ex.Message}");
                 return null;
             }
         }
@@ -49,7 +50,6 @@ namespace BlobCogBob.Core.Services
             }
 
             client.Timeout = TimeSpan.FromMinutes(1);
-            client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
             return client;
         }

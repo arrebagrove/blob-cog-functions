@@ -78,9 +78,6 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeMill.VMFirstNav, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CodeMill.VMFirstNav.1.0.1.31\lib\netstandard1.0\CodeMill.VMFirstNav.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
@@ -102,6 +99,37 @@
     </Reference>
     <Reference Include="Xamarin.Forms.Xaml">
       <HintPath>..\packages\Xamarin.Forms.2.5.0.122203\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="CodeMill.VMFirstNav, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CodeMill.VMFirstNav.1.0.1.31\lib\netstandard1.0\CodeMill.VMFirstNav.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Edm">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.8.2\lib\netstandard1.1\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Spatial">
+      <HintPath>..\packages\System.Spatial.5.8.2\lib\netstandard1.1\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData">
+      <HintPath>..\packages\Microsoft.Data.OData.5.8.2\lib\netstandard1.1\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage">
+      <HintPath>..\packages\WindowsAzure.Storage.8.7.0\lib\netstandard1.3\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="MonkeyCache">
+      <HintPath>..\packages\MonkeyCache.0.0.1.59-beta\lib\xamarinios10\MonkeyCache.dll</HintPath>
+    </Reference>
+    <Reference Include="MonkeyCache.FileStore">
+      <HintPath>..\packages\MonkeyCache.FileStore.0.0.1.59-beta\lib\xamarinios10\MonkeyCache.FileStore.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

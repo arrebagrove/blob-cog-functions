@@ -12,6 +12,8 @@ namespace BlobCogBob.Core
         {
             InitializeComponent();
 
+            MonkeyCache.FileStore.Barrel.ApplicationId = "blobcogbob";
+
             MainPage = new NavigationPage(new MenusList { ViewModel = new MenusListViewModel() });
         }
     }

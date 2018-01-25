@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 using BlobCogBob.Core.Shared;
 using BlobCogBob.Shared;
+using System.IO;
+using System.Net.Http;
 
 namespace BlobCogBob.Core.Services
 {
@@ -14,14 +16,32 @@ namespace BlobCogBob.Core.Services
         {
             var resp = await Post(BackendConstants.SASRetrievalUrl, new StoragePermissionRequest());
 
-            return await resp?.Content.ReadAsStringAsync();
+            return await ReadStringValueFromResponse(resp).ConfigureAwait(false);
         }
 
         public async static Task<string> GetContainerWriteSasToken()
         {
             var resp = await Post(BackendConstants.SASRetrievalUrl, new StoragePermissionRequest { Permission = "Write" });
 
-            return await resp?.Content.ReadAsStringAsync();
+            return await ReadStringValueFromResponse(resp).ConfigureAwait(false);
+        }
+
+        public async static Task<string> GetContainerListSasToken()
+        {
+            var resp = await Post(BackendConstants.SASRetrievalUrl, new StoragePermissionRequest
+            {
+                Permission = "List"
+            });
+
+            return await ReadStringValueFromResponse(resp).ConfigureAwait(false);
+        }
+
+        async static Task<string> ReadStringValueFromResponse(HttpResponseMessage response)
+        {
+            if (response?.Content == null)
+                return null;
+
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
     }
 }

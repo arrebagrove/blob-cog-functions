@@ -18,5 +18,12 @@ namespace BlobCogBob.Core
 
         MenusListViewModel vm;
         public MenusListViewModel ViewModel { get => vm; set { vm = value; BindingContext = vm; } }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            Device.BeginInvokeOnMainThread(blobList.BeginRefresh);
+        }
     }
 }
