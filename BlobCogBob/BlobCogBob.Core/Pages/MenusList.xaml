@@ -18,4 +18,7 @@
             </ListView.Footer>
         </ListView>
     </ContentPage.Content>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="+" Command="{Binding AddPhoto}" />
+    </ContentPage.ToolbarItems>
 </ContentPage>

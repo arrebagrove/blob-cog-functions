@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:entryCustomReturn="clr-namespace:EntryCustomReturn.Forms.Plugin.Abstractions;assembly=EntryCustomReturn.Forms.Plugin.Abstractions"
+    x:Class="BlobCogBob.Core.AddPhotoPage"
+    Title="{Binding Title}">
+    <ContentPage.Content>
+        <ScrollView>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Image BackgroundColor="Silver" Grid.ColumnSpan="2" />
+                <ProgressBar BackgroundColor="Red" Grid.Row="0" Grid.ColumnSpan="2" Progress="{Binding UploadProgress}" />
+                <Label Text="Name:" Margin="3" Grid.Row="1" Grid.Column="0" />
+                <entryCustomReturn:CustomReturnEntry
+                    ReturnType="Done" Grid.Row="1" Grid.Column="1" />
+                <Button Text="Take Photo" Command="{Binding TakePhoto}" BackgroundColor="Red" Grid.Row="2" Grid.ColumnSpan="2" />
+            </Grid>
+        </ScrollView>
+    </ContentPage.Content>
+    <ContentPage.ToolbarItems>
+       <ToolbarItem Text="Save" Command="{Binding Save}" Priority="0" />
+       <ToolbarItem Text="Cancel" Command="{Binding Cancel}" Priority="1" /> 
+    </ContentPage.ToolbarItems>
+</ContentPage>

@@ -15,7 +15,7 @@ namespace BlobCogBob.Core.Services
 {
     public abstract class HttpService
     {
-        static readonly HttpClient client = CreateHttpClient();
+        static readonly HttpClient client = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
 
         public static async Task<HttpResponseMessage> Post<T>(string url, T objectToPost)
         {
@@ -32,26 +32,6 @@ namespace BlobCogBob.Core.Services
                 Debug.WriteLine($"**** ERROR: {ex.Message}");
                 return null;
             }
-        }
-
-        static HttpClient CreateHttpClient()
-        {
-            HttpClient client;
-
-            switch (Device.RuntimePlatform)
-            {
-                case Device.iOS:
-                case Device.Android:
-                    client = new HttpClient();
-                    break;
-                default:
-                    client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip });
-                    break;
-            }
-
-            client.Timeout = TimeSpan.FromMinutes(1);
-
-            return client;
         }
     }
 }

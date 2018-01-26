@@ -52,6 +52,15 @@ namespace BlobCogBob.Core.ViewModels
             }
         }
 
+        ICommand _addPhoto;
+        public ICommand AddPhoto => _addPhoto ??
+            (_addPhoto = new Command(async () => await ExecuteAddPhotoCommand()));
+
+        async Task ExecuteAddPhotoCommand()
+        {
+            await NavigationService.Instance.PushModalAsync(new AddPhotoViewModel());
+        }
+
         ObservableCollection<MenuBlob> _allBlobs;
         public ObservableCollection<MenuBlob> AllBlobs { get => _allBlobs; set => SetProperty(ref _allBlobs, value); }
     }

@@ -9,6 +9,10 @@ using System.Net.Http;
 using MonkeyCache.FileStore;
 using System.Runtime.InteropServices;
 using Xamarin.Forms;
+using System.IO;
+using System.Diagnostics;
+using Microsoft.WindowsAzure.Storage.Core.Util;
+using System.Threading;
 
 namespace BlobCogBob.Core
 {
@@ -23,7 +27,7 @@ namespace BlobCogBob.Core
     {
         public async static Task<List<MenuBlob>> ListAllBlobs()
         {
-            var listCredentials = await ObtainListCredentials();
+            var listCredentials = await ObtainStorageCredentials(StoragePermissionType.List);
             var csa = new CloudStorageAccount(listCredentials, StorageConstants.AccountName,
                                               StorageConstants.AccountUrlSuffix, true);
 
@@ -37,7 +41,7 @@ namespace BlobCogBob.Core
             {
                 var allBlobs = await container.ListBlobsSegmentedAsync("", true,
                                                                        BlobListingDetails.None, 100,
-                                                                       continuationToken, null, null);
+                                                                       continuationToken, null, null).ConfigureAwait(false);
 
                 continuationToken = allBlobs.ContinuationToken;
 
@@ -53,28 +57,59 @@ namespace BlobCogBob.Core
             return theBlobs;
         }
 
-        static async Task<StorageCredentials> ObtainListCredentials()
+        public async static Task<bool> UploadBlob(Stream blobContent, UploadProgress progressUpdater)
         {
-            var cacheKey = "listCredentials";
+            try
+            {
+                var writeCredentials = await ObtainStorageCredentials(StoragePermissionType.Write);
 
-            StoragePermissionType.List.ToString();
+                var csa = new CloudStorageAccount(writeCredentials, StorageConstants.AccountName, StorageConstants.AccountUrlSuffix, true);
+
+                var blobClient = csa.CreateCloudBlobClient();
+
+                var container = blobClient.GetContainerReference(StorageConstants.PhotosContainerName);
+
+                var blockBlob = container.GetBlockBlobReference($"{Guid.NewGuid()}.png");
+
+                await blockBlob.UploadFromStreamAsync(blobContent, null, null, null, progressUpdater, new CancellationToken());
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** Error {ex.Message}");
+
+                return false;
+            }
+
+            return true;
+        }
+
+        #region Helpers
+
+        static async Task<StorageCredentials> ObtainStorageCredentials(StoragePermissionType permissionType)
+        {
+            var cacheKey = permissionType.ToString();
 
             if (Barrel.Current.Exists(cacheKey) && !Barrel.Current.IsExpired(cacheKey))
                 return new StorageCredentials(Barrel.Current.Get<string>(cacheKey));
 
-            var listToken = await FunctionService.GetContainerListSasToken().ConfigureAwait(false);
+            string storageToken;
+            switch (permissionType)
+            {
+                case StoragePermissionType.List:
+                    storageToken = await FunctionService.GetContainerListSasToken();
+                    break;
+                case StoragePermissionType.Read:
+                    storageToken = await FunctionService.GetContainerReadSASToken();
+                    break;
+                case StoragePermissionType.Write:
+                    storageToken = await FunctionService.GetContainerWriteSasToken();
+                    break;
+                default:
+                    storageToken = null;
+                    break;
+            }
 
-            return StuffCredentialsInBarrel(listToken, cacheKey);
-        }
-
-        static StorageCredentials ReadCredentials()
-        {
-            throw new NotImplementedException();
-        }
-
-        static StorageCredentials WriteCredentials()
-        {
-            throw new NotImplementedException();
+            return storageToken == null ? null : StuffCredentialsInBarrel(storageToken, cacheKey);
         }
 
         static TimeSpan GetExpirationSpan(string tokenQueryString)
@@ -102,5 +137,11 @@ namespace BlobCogBob.Core
 
             return credentials;
         }
+
+        #endregion
+
     }
+
+
+
 }
