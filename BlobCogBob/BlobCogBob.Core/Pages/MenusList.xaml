@@ -3,8 +3,22 @@
     xmlns="http://xamarin.com/schemas/2014/forms" 
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
     x:Class="BlobCogBob.Core.MenusList"
-    Title="Menu List">
+    Title="{Binding Title}">
     <ContentPage.Content>
-        <Label Text="Hello Menus!" VerticalOptions="Center" HorizontalOptions="Center" />
+        <ListView x:Name="blobList" ItemsSource="{Binding AllBlobs}" 
+                  RefreshAllowed="true" IsPullToRefreshEnabled="true" RefreshCommand="{Binding RefreshList}"
+                  IsRefreshing="{Binding IsRefreshing}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ImageCell ImageSource="{Binding BlobUri}" Text="{Binding BlobName}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.Footer>
+                <Label Text="" />
+            </ListView.Footer>
+        </ListView>
     </ContentPage.Content>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="+" Command="{Binding AddPhoto}" />
+    </ContentPage.ToolbarItems>
 </ContentPage>

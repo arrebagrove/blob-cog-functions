@@ -7,6 +7,8 @@ using UIKit;
 
 using BlobCogBob.Core;
 
+using CodeMill.VMFirstNav;
+
 namespace BlobCogBob.iOS
 {
     [Register("AppDelegate")]
@@ -17,6 +19,10 @@ namespace BlobCogBob.iOS
             global::Xamarin.Forms.Forms.Init();
 
             LoadApplication(new App());
+
+            EntryCustomReturn.Forms.Plugin.iOS.CustomReturnEntryRenderer.Init();
+
+            NavigationService.Instance.RegisterViewModels(typeof(App).Assembly);
 
             return base.FinishedLaunching(app, options);
         }
