@@ -47,15 +47,21 @@ namespace BlobCogBob.Core
 
             bool uploadResult = false;
 
-            var options = new StoreCameraMediaOptions();
+            var shouldTakeNewPhoto = await ShouldTakeNewPhoto();
 
-            using (var photo = await CrossMedia.Current.TakePhotoAsync(options).ConfigureAwait(false))
+            MediaFile thePhoto = null;
+            if (shouldTakeNewPhoto)
+                thePhoto = await MediaService.GetMediaFileFromCamera().ConfigureAwait(false);
+            else
+                thePhoto = await MediaService.GetMediaFileFromLibrary().ConfigureAwait(false);
+
+            if (thePhoto == null)
+                return;
+
+            using (var mediaStream = MediaService.GetPhotoStream(thePhoto, true))
             {
-                using (var mediaStream = photo.GetStream())
-                {
-                    progressUpdater.TotalImageBytes = mediaStream.Length;
-                    uploadResult = await StorageService.UploadBlob(mediaStream, progressUpdater).ConfigureAwait(false);
-                }
+                progressUpdater.TotalImageBytes = mediaStream.Length;
+                uploadResult = await StorageService.UploadBlob(mediaStream, progressUpdater).ConfigureAwait(false);
             }
 
             progressUpdater.Updated -= UpdateImageUploadProgress;
@@ -72,6 +78,24 @@ namespace BlobCogBob.Core
         void UpdateImageUploadProgress(object sender, double e)
         {
             UploadProgress = e;
+        }
+
+        async Task<bool> ShouldTakeNewPhoto()
+        {
+            const string take_photo = "Take Photo";
+            string takePhotoResult = default(string);
+
+            //Device.BeginInvokeOnMainThread(async () =>
+            //{
+            takePhotoResult = await Application.Current.MainPage.DisplayActionSheet(
+                "Take or Pick Photo",
+                "Cancel",
+               null,
+                new string[] { "Take Photo", "Pick Photo" }
+            );
+            //});
+
+            return takePhotoResult == take_photo;
         }
     }
 }
