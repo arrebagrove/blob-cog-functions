@@ -5,15 +5,23 @@ using System.Threading.Tasks;
 using CodeMill.VMFirstNav;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
+using System.Diagnostics;
 
 namespace BlobCogBob.Core
 {
     public class AddPhotoViewModel : NavigableViewModel
     {
+        readonly string found_results_info = "Here's what we found:";
+        readonly string no_results_info = "We couldn't find any words in that photo!";
+
         public AddPhotoViewModel()
         {
             Title = "Add Photo";
+            SearchComplete = false;
+            SearchInProgress = false;
         }
+
+        #region Properties
 
         double uploadProgress;
         public double UploadProgress
@@ -24,6 +32,60 @@ namespace BlobCogBob.Core
                 SetProperty(ref uploadProgress, value);
             }
         }
+
+        string foundWords;
+        public string FoundWords
+        {
+            get => foundWords;
+            set
+            {
+                SetProperty(ref foundWords, value);
+            }
+        }
+
+        string searchResultInfo;
+        public string SearchResultInfo
+        {
+            get => searchResultInfo;
+            set
+            {
+                SetProperty(ref searchResultInfo, value);
+            }
+        }
+
+        bool searchComplete;
+        public bool SearchComplete
+        {
+            get => searchComplete;
+            set
+            {
+                SetProperty(ref searchComplete, value);
+            }
+        }
+
+        bool searchInProgress;
+        public bool SearchInProgress
+        {
+            get => searchInProgress;
+            set
+            {
+                SetProperty(ref searchInProgress, value);
+            }
+        }
+
+        ImageSource theImage;
+        public ImageSource TheImage
+        {
+            get => theImage;
+            set
+            {
+                SetProperty(ref theImage, value);
+            }
+        }
+
+        #endregion
+
+        #region Command Properties
 
         ICommand _cancelCommand;
         public ICommand Cancel => _cancelCommand ??
@@ -40,44 +102,74 @@ namespace BlobCogBob.Core
 
         public async Task ExecuteTakePhotoCommand()
         {
-            UploadProgress = 0;
-            UploadProgress progressUpdater = new UploadProgress();
-
-            progressUpdater.Updated += UpdateImageUploadProgress;
-
-            var shouldTakeNewPhoto = await ShouldTakeNewPhoto();
-
-            MediaFile thePhoto = null;
-            if (shouldTakeNewPhoto)
-                thePhoto = await MediaService.GetMediaFileFromCamera().ConfigureAwait(false);
-            else
-                thePhoto = await MediaService.GetMediaFileFromLibrary().ConfigureAwait(false);
-
-            if (thePhoto == null)
+            if (SearchInProgress)
                 return;
 
-            Uri blobAddress;
-            using (var mediaStream = MediaService.GetPhotoStream(thePhoto, true))
+            try
             {
-                progressUpdater.TotalImageBytes = mediaStream.Length;
-                blobAddress = await StorageService.UploadBlob(mediaStream, progressUpdater).ConfigureAwait(false);
-            }
+                SearchInProgress = true;
+                SearchComplete = false;
+                SearchResultInfo = "";
+                FoundWords = "";
+                TheImage = null;
+                UploadProgress = 0;
 
-            progressUpdater.Updated -= UpdateImageUploadProgress;
+                UploadProgress progressUpdater = new UploadProgress();
 
+                progressUpdater.Updated += UpdateImageUploadProgress;
 
-            if (blobAddress != null)
-            {
-                await OCRService.ReadHandwrittenText(blobAddress.ToString()).ConfigureAwait(false);
+                var shouldTakeNewPhoto = await ShouldTakeNewPhoto();
 
-                Device.BeginInvokeOnMainThread(async () =>
+                MediaFile thePhoto = null;
+                if (shouldTakeNewPhoto)
+                    thePhoto = await MediaService.GetMediaFileFromCamera().ConfigureAwait(false);
+                else
+                    thePhoto = await MediaService.GetMediaFileFromLibrary().ConfigureAwait(false);
+
+                if (thePhoto == null)
+                    return;
+
+                Uri blobAddress;
+                using (var mediaStream = MediaService.GetPhotoStream(thePhoto, false))
                 {
-                    await NavigationService.Instance.PopModalAsync().ConfigureAwait(false);
-                });
+                    TheImage = ImageSource.FromStream(() => MediaService.GetPhotoStream(thePhoto, true));
+                    progressUpdater.TotalImageBytes = mediaStream.Length;
+                    blobAddress = await StorageService.UploadBlob(mediaStream, progressUpdater).ConfigureAwait(false);
+                }
+
+                progressUpdater.Updated -= UpdateImageUploadProgress;
+
+                if (blobAddress != null)
+                {
+                    var ocrResult = await OCRService.ReadHandwrittenText(blobAddress.ToString()).ConfigureAwait(false);
+
+                    if (!string.IsNullOrWhiteSpace(ocrResult))
+                    {
+                        FoundWords = ocrResult;
+                        SearchResultInfo = found_results_info;
+                    }
+                    else
+                    {
+                        FoundWords = "";
+                        SearchResultInfo = no_results_info;
+                    }
+                }
+                else
+                    await Application.Current.MainPage.DisplayAlert("Upload Error", "Couldn't upload the photo to BLOB storage", "OK");
+
             }
-            else
-                await Application.Current.MainPage.DisplayAlert("bad bad", "c'mon", "fine");
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** {ex.Message}");
+            }
+            finally
+            {
+                SearchComplete = true;
+                SearchInProgress = false;
+            }
         }
+
+        #endregion
 
         void UpdateImageUploadProgress(object sender, double e)
         {

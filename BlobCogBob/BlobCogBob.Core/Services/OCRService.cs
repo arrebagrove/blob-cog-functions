@@ -20,9 +20,11 @@ namespace BlobCogBob.Core
             {
                 var scc = new ApiKeyServiceClientCredentials(APIKeys.ComputerVisionAPIKey);
                 var vision = new ComputerVisionAPI(scc);
+
+                // Set this to whatever region you created your service in the portal
                 vision.AzureRegion = AzureRegions.Southcentralus;
 
-                var headers = await vision.RecognizeTextAsync(urlOfImage, false).ConfigureAwait(false);
+                var headers = await vision.RecognizeTextAsync(urlOfImage, true).ConfigureAwait(false);
 
                 var allSplits = headers.OperationLocation.Split(new string[] { @"/" }, StringSplitOptions.None);
                 var operationId = allSplits[allSplits.GetUpperBound(0)];
