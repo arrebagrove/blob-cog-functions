@@ -8,6 +8,8 @@ using Plugin.Media.Abstractions;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace BlobCogBob.Core
 {
@@ -15,6 +17,8 @@ namespace BlobCogBob.Core
     {
         readonly string found_results_info = "Here's what we found:";
         readonly string no_results_info = "We couldn't find any words in that photo!";
+
+        List<OCRTextInfo> _handwritingOcr = null;
 
         public AddPhotoViewModel()
         {
@@ -104,7 +108,14 @@ namespace BlobCogBob.Core
 
         async Task ExecuteSaveCommand()
         {
-            await NavigationService.Instance.PopModalAsync();
+            if (_handwritingOcr == null)
+                return;
+
+            var ocrJson = JsonConvert.SerializeObject(_handwritingOcr);
+            await StorageService.WriteToQueue(ocrJson).ConfigureAwait(false);
+
+            Device.BeginInvokeOnMainThread(async () =>
+                                           await NavigationService.Instance.PopModalAsync());
         }
 
         ICommand _takePhotoCommand;
@@ -158,6 +169,8 @@ namespace BlobCogBob.Core
                     {
                         var tempWords = new StringBuilder();
                         ocrResult.ForEach(ocr => tempWords.AppendLine(ocr.LineText));
+
+                        this._handwritingOcr = ocrResult;
 
                         FoundWords = tempWords.ToString();
                         SearchResultInfo = found_results_info;

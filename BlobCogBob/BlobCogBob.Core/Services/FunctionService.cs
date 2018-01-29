@@ -43,5 +43,10 @@ namespace BlobCogBob.Core.Services
 
             return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
+
+        internal static Task<string> GetQueueSasToken()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

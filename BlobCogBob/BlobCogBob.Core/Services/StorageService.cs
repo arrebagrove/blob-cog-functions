@@ -11,13 +11,16 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading;
 
+using Microsoft.WindowsAzure.Storage.Queue;
+
 namespace BlobCogBob.Core
 {
     enum StoragePermissionType
     {
         List,
         Read,
-        Write
+        Write,
+        Queue
     }
 
     public class StorageService
@@ -83,6 +86,27 @@ namespace BlobCogBob.Core
             return blobAddress;
         }
 
+        public async static Task WriteToQueue(string contentToWrite)
+        {
+            try
+            {
+                var queueCredentials = await ObtainStorageCredentials(StoragePermissionType.Queue);
+
+                var qsa = new CloudQueueClient(StorageConstants.QueueUri, queueCredentials);
+
+                var menuQueue = qsa.GetQueueReference("menu-queue");
+
+                await menuQueue.CreateIfNotExistsAsync().ConfigureAwait(false);
+
+                var message = new CloudQueueMessage(contentToWrite);
+                await menuQueue.AddMessageAsync(message).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** Error {ex.Message}");
+            }
+        }
+
         #region Helpers
 
         static async Task<StorageCredentials> ObtainStorageCredentials(StoragePermissionType permissionType)
@@ -92,20 +116,20 @@ namespace BlobCogBob.Core
             if (Barrel.Current.Exists(cacheKey) && !Barrel.Current.IsExpired(cacheKey))
                 return new StorageCredentials(Barrel.Current.Get<string>(cacheKey));
 
-            string storageToken;
+            string storageToken = null;
             switch (permissionType)
             {
                 case StoragePermissionType.List:
-                    storageToken = await FunctionService.GetContainerListSasToken();
+                    storageToken = await FunctionService.GetContainerListSasToken().ConfigureAwait(false);
                     break;
                 case StoragePermissionType.Read:
-                    storageToken = await FunctionService.GetContainerReadSASToken();
+                    storageToken = await FunctionService.GetContainerReadSASToken().ConfigureAwait(false);
                     break;
                 case StoragePermissionType.Write:
-                    storageToken = await FunctionService.GetContainerWriteSasToken();
+                    storageToken = await FunctionService.GetContainerWriteSasToken().ConfigureAwait(false);
                     break;
-                default:
-                    storageToken = null;
+                case StoragePermissionType.Queue:
+                    storageToken = await FunctionService.GetQueueSasToken().ConfigureAwait(false);
                     break;
             }
 
