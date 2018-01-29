@@ -45,8 +45,6 @@ namespace BlobCogBob.Core
 
             progressUpdater.Updated += UpdateImageUploadProgress;
 
-            bool uploadResult = false;
-
             var shouldTakeNewPhoto = await ShouldTakeNewPhoto();
 
             MediaFile thePhoto = null;
@@ -58,19 +56,25 @@ namespace BlobCogBob.Core
             if (thePhoto == null)
                 return;
 
+            Uri blobAddress;
             using (var mediaStream = MediaService.GetPhotoStream(thePhoto, true))
             {
                 progressUpdater.TotalImageBytes = mediaStream.Length;
-                uploadResult = await StorageService.UploadBlob(mediaStream, progressUpdater).ConfigureAwait(false);
+                blobAddress = await StorageService.UploadBlob(mediaStream, progressUpdater).ConfigureAwait(false);
             }
 
             progressUpdater.Updated -= UpdateImageUploadProgress;
 
-            if (uploadResult)
+
+            if (blobAddress != null)
+            {
+                await OCRService.ReadHandwrittenText(blobAddress.ToString()).ConfigureAwait(false);
+
                 Device.BeginInvokeOnMainThread(async () =>
                 {
                     await NavigationService.Instance.PopModalAsync().ConfigureAwait(false);
                 });
+            }
             else
                 await Application.Current.MainPage.DisplayAlert("bad bad", "c'mon", "fine");
         }
@@ -85,15 +89,12 @@ namespace BlobCogBob.Core
             const string take_photo = "Take Photo";
             string takePhotoResult = default(string);
 
-            //Device.BeginInvokeOnMainThread(async () =>
-            //{
             takePhotoResult = await Application.Current.MainPage.DisplayActionSheet(
                 "Take or Pick Photo",
                 "Cancel",
                null,
                 new string[] { "Take Photo", "Pick Photo" }
             );
-            //});
 
             return takePhotoResult == take_photo;
         }

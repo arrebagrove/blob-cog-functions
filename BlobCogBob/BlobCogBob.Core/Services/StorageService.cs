@@ -7,11 +7,8 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Net.Http;
 using MonkeyCache.FileStore;
-using System.Runtime.InteropServices;
-using Xamarin.Forms;
 using System.IO;
 using System.Diagnostics;
-using Microsoft.WindowsAzure.Storage.Core.Util;
 using System.Threading;
 
 namespace BlobCogBob.Core
@@ -57,8 +54,9 @@ namespace BlobCogBob.Core
             return theBlobs;
         }
 
-        public async static Task<bool> UploadBlob(Stream blobContent, UploadProgress progressUpdater)
+        public async static Task<Uri> UploadBlob(Stream blobContent, UploadProgress progressUpdater)
         {
+            Uri blobAddress = null;
             try
             {
                 var writeCredentials = await ObtainStorageCredentials(StoragePermissionType.Write);
@@ -72,15 +70,17 @@ namespace BlobCogBob.Core
                 var blockBlob = container.GetBlockBlobReference($"{Guid.NewGuid()}.png");
 
                 await blockBlob.UploadFromStreamAsync(blobContent, null, null, null, progressUpdater, new CancellationToken());
+
+                blobAddress = blockBlob.Uri;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"*** Error {ex.Message}");
 
-                return false;
+                return null;
             }
 
-            return true;
+            return blobAddress;
         }
 
         #region Helpers
