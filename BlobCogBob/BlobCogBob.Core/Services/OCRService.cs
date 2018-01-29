@@ -8,13 +8,14 @@ using System.Diagnostics;
 
 using System.Net.Http.Formatting;
 using System.Net.Http;
+using System.Collections.Generic;
 
 namespace BlobCogBob.Core
 {
     public static class OCRService
     {
 
-        public static async Task<string> ReadHandwrittenText(string urlOfImage)
+        public static async Task<List<OCRTextInfo>> ReadHandwrittenText(string urlOfImage)
         {
             try
             {
@@ -39,21 +40,26 @@ namespace BlobCogBob.Core
                 if (opResult.Status == TextOperationStatusCodes.Failed)
                     return null;
 
-
-                StringBuilder allWords = new StringBuilder();
+                var ocrInfo = new List<OCRTextInfo>();
                 foreach (var line in opResult.RecognitionResult.Lines)
                 {
-                    allWords.AppendLine(line.Text);
+                    ocrInfo.Add(new OCRTextInfo
+                    {
+                        LineText = line.Text,
+                        LeftTop = new ImageCoordinate { X = line.BoundingBox[0], Y = line.BoundingBox[1] },
+                        RightTop = new ImageCoordinate { X = line.BoundingBox[2], Y = line.BoundingBox[3] },
+                        RightBottom = new ImageCoordinate { X = line.BoundingBox[4], Y = line.BoundingBox[5] },
+                        LeftBottom = new ImageCoordinate { X = line.BoundingBox[6], Y = line.BoundingBox[7] }
+                    });
                 }
 
-                return allWords.ToString();
+                return ocrInfo;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"*** ERROR: {ex.Message}");
+                return null;
             }
-
-            return null;
         }
     }
 }

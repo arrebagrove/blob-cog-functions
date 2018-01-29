@@ -6,6 +6,8 @@ using CodeMill.VMFirstNav;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 
 namespace BlobCogBob.Core
 {
@@ -39,7 +41,7 @@ namespace BlobCogBob.Core
             get => foundWords;
             set
             {
-                SetProperty(ref foundWords, value);
+                SetProperty(ref foundWords, value, onChanged: () => ((Command)Save).ChangeCanExecute());
             }
         }
 
@@ -96,6 +98,15 @@ namespace BlobCogBob.Core
             await NavigationService.Instance.PopModalAsync();
         }
 
+        ICommand _saveCommand;
+        public ICommand Save => _saveCommand ??
+        (_saveCommand = new Command(async () => await ExecuteSaveCommand(), () => !string.IsNullOrWhiteSpace(FoundWords)));
+
+        async Task ExecuteSaveCommand()
+        {
+            await NavigationService.Instance.PopModalAsync();
+        }
+
         ICommand _takePhotoCommand;
         public ICommand TakePhoto => _takePhotoCommand ??
         (_takePhotoCommand = new Command(async () => await ExecuteTakePhotoCommand()));
@@ -143,9 +154,12 @@ namespace BlobCogBob.Core
                 {
                     var ocrResult = await OCRService.ReadHandwrittenText(blobAddress.ToString()).ConfigureAwait(false);
 
-                    if (!string.IsNullOrWhiteSpace(ocrResult))
+                    if (ocrResult != null)
                     {
-                        FoundWords = ocrResult;
+                        var tempWords = new StringBuilder();
+                        ocrResult.ForEach(ocr => tempWords.AppendLine(ocr.LineText));
+
+                        FoundWords = tempWords.ToString();
                         SearchResultInfo = found_results_info;
                     }
                     else
