@@ -8,6 +8,10 @@ using Plugin.Media.Abstractions;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using BlobCogBob.Shared;
+using BlobCogBob.Core.Services;
 
 namespace BlobCogBob.Core
 {
@@ -15,6 +19,8 @@ namespace BlobCogBob.Core
     {
         readonly string found_results_info = "Here's what we found:";
         readonly string no_results_info = "We couldn't find any words in that photo!";
+
+        PhotoInfo ocrPhoto;
 
         public AddPhotoViewModel()
         {
@@ -104,7 +110,17 @@ namespace BlobCogBob.Core
 
         async Task ExecuteSaveCommand()
         {
-            await NavigationService.Instance.PopModalAsync();
+            if (ocrPhoto == null)
+                return;
+
+            var success = await FunctionService.WritePhotoInfoToQueue(ocrPhoto).ConfigureAwait(false);
+
+            if (success)
+                Device.BeginInvokeOnMainThread(async () =>
+                                               await NavigationService.Instance.PopModalAsync());
+            else
+                Device.BeginInvokeOnMainThread(async () =>
+                    await Application.Current.MainPage.DisplayAlert("Error", "Error saving info to queue, try again", "OK"));
         }
 
         ICommand _takePhotoCommand;
@@ -124,6 +140,8 @@ namespace BlobCogBob.Core
                 FoundWords = "";
                 TheImage = null;
                 UploadProgress = 0;
+
+                ocrPhoto = null;
 
                 UploadProgress progressUpdater = new UploadProgress();
 
@@ -158,6 +176,16 @@ namespace BlobCogBob.Core
                     {
                         var tempWords = new StringBuilder();
                         ocrResult.ForEach(ocr => tempWords.AppendLine(ocr.LineText));
+
+                        ocrPhoto = new PhotoInfo
+                        {
+                            BlobUrl = blobAddress.ToString(),
+                            IdentifiedText = ocrResult,
+                            Latitude = 43,
+                            Longitude = -89,
+                            QualityRating = 1,
+                            UserId = "1"
+                        };
 
                         FoundWords = tempWords.ToString();
                         SearchResultInfo = found_results_info;

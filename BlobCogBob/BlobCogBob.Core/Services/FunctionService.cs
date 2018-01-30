@@ -43,5 +43,12 @@ namespace BlobCogBob.Core.Services
 
             return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
+
+        public async static Task<bool> WritePhotoInfoToQueue(PhotoInfo photoInfo)
+        {
+            var resp = await Post(BackendConstants.WriteToPhotoInfoQueueUrl, photoInfo).ConfigureAwait(false);
+
+            return resp?.StatusCode == System.Net.HttpStatusCode.OK;
+        }
     }
 }

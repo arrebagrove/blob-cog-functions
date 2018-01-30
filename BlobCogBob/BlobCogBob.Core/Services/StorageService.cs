@@ -11,6 +11,9 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading;
 
+using Microsoft.WindowsAzure.Storage.Queue;
+using BlobCogBob.Shared;
+
 namespace BlobCogBob.Core
 {
     enum StoragePermissionType
@@ -92,20 +95,20 @@ namespace BlobCogBob.Core
             if (Barrel.Current.Exists(cacheKey) && !Barrel.Current.IsExpired(cacheKey))
                 return new StorageCredentials(Barrel.Current.Get<string>(cacheKey));
 
-            string storageToken;
+            string storageToken = null;
             switch (permissionType)
             {
                 case StoragePermissionType.List:
-                    storageToken = await FunctionService.GetContainerListSasToken();
+                    storageToken = await FunctionService.GetContainerListSasToken().ConfigureAwait(false);
                     break;
                 case StoragePermissionType.Read:
-                    storageToken = await FunctionService.GetContainerReadSASToken();
+                    storageToken = await FunctionService.GetContainerReadSASToken().ConfigureAwait(false);
                     break;
                 case StoragePermissionType.Write:
-                    storageToken = await FunctionService.GetContainerWriteSasToken();
+                    storageToken = await FunctionService.GetContainerWriteSasToken().ConfigureAwait(false);
                     break;
-                default:
-                    storageToken = null;
+                case StoragePermissionType.Queue:
+                    storageToken = await FunctionService.GetQueueSasToken().ConfigureAwait(false);
                     break;
             }
 

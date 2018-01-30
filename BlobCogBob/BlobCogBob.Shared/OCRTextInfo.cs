@@ -1,5 +1,8 @@
 ﻿using System;
-namespace BlobCogBob.Core
+using System.Collections.Generic;
+using System.Text;
+
+namespace BlobCogBob.Shared
 {
     public class OCRTextInfo
     {
@@ -9,11 +12,5 @@ namespace BlobCogBob.Core
         public ImageCoordinate RightBottom { get; set; }
         public ImageCoordinate LeftBottom { get; set; }
         public double Rating { get; set; }
-    }
-
-    public class ImageCoordinate
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
     }
 }
