@@ -18,16 +18,24 @@ namespace BlobCogBob.Functions
     {
         [FunctionName("WritePhotoInfoQueue")]
         [return: Queue("menu-photos")]
-        public static async Task<OCRTextInfo> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestMessage input, TraceWriter log)
+        public static async Task<PhotoInfo> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestMessage input, TraceWriter log)
         {
             // Will eventually use this when we require the user to be authorized to use the app
             var isAuth = input.GetRequestContext().Principal.Identity.IsAuthenticated;
 
             log.Info($"Is Auth: {isAuth}", "request context");
 
-            OCRTextInfo data = await input.Content.ReadAsAsync<OCRTextInfo>();
+            try
+            {
+                PhotoInfo data = await input.Content.ReadAsAsync<PhotoInfo>();
 
-            return data;
+                return data;
+            }
+            catch (Exception ex)
+            {
+                log.Error($"*** Error: {ex.Message}");
+                return null;
+            }
         }
     }
 }
