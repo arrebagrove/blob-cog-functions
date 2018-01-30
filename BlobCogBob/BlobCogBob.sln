@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlobCogBob.iOS", "iOS\BlobCogBob.iOS.csproj", "{C93026E3-1250-4A96-A523-C0CC25969FE3}"
 EndProject
@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlobCogBob.Core", "BlobCogB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlobCogBob.Functions", "BlobCogBob.Functions\BlobCogBob.Functions.csproj", "{99A658EC-C071-4F4D-BD50-0EA5BB3F0C27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlobCogBob.Shared", "BlobCogBob.Shared\BlobCogBob.Shared.csproj", "{91B4C201-08F1-41DD-A718-9F918ABAF9FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlobCogBob.Shared", "BlobCogBob.Shared\BlobCogBob.Shared.csproj", "{91B4C201-08F1-41DD-A718-9F918ABAF9FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

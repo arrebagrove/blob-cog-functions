@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net.Http.Formatting;
 using System.Net.Http;
 using System.Collections.Generic;
+using BlobCogBob.Shared;
 
 namespace BlobCogBob.Core
 {

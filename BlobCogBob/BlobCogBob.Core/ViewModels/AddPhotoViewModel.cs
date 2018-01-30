@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using BlobCogBob.Shared;
+using BlobCogBob.Core.Services;
 
 namespace BlobCogBob.Core
 {
@@ -18,7 +20,7 @@ namespace BlobCogBob.Core
         readonly string found_results_info = "Here's what we found:";
         readonly string no_results_info = "We couldn't find any words in that photo!";
 
-        List<OCRTextInfo> _handwritingOcr = null;
+        PhotoInfo ocrPhoto;
 
         public AddPhotoViewModel()
         {
@@ -108,14 +110,17 @@ namespace BlobCogBob.Core
 
         async Task ExecuteSaveCommand()
         {
-            if (_handwritingOcr == null)
+            if (ocrPhoto == null)
                 return;
 
-            var ocrJson = JsonConvert.SerializeObject(_handwritingOcr);
-            await StorageService.WriteToQueue(ocrJson).ConfigureAwait(false);
+            var success = await FunctionService.WritePhotoInfoToQueue(ocrPhoto).ConfigureAwait(false);
 
-            Device.BeginInvokeOnMainThread(async () =>
-                                           await NavigationService.Instance.PopModalAsync());
+            if (success)
+                Device.BeginInvokeOnMainThread(async () =>
+                                               await NavigationService.Instance.PopModalAsync());
+            else
+                Device.BeginInvokeOnMainThread(async () =>
+                    await Application.Current.MainPage.DisplayAlert("Error", "Error saving info to queue, try again", "OK"));
         }
 
         ICommand _takePhotoCommand;
@@ -135,6 +140,8 @@ namespace BlobCogBob.Core
                 FoundWords = "";
                 TheImage = null;
                 UploadProgress = 0;
+
+                ocrPhoto = null;
 
                 UploadProgress progressUpdater = new UploadProgress();
 
@@ -170,7 +177,15 @@ namespace BlobCogBob.Core
                         var tempWords = new StringBuilder();
                         ocrResult.ForEach(ocr => tempWords.AppendLine(ocr.LineText));
 
-                        this._handwritingOcr = ocrResult;
+                        ocrPhoto = new PhotoInfo
+                        {
+                            BlobUrl = blobAddress.ToString(),
+                            IdentifiedText = ocrResult,
+                            Latitude = 43,
+                            Longitude = -89,
+                            QualityRating = 1,
+                            UserId = "1"
+                        };
 
                         FoundWords = tempWords.ToString();
                         SearchResultInfo = found_results_info;

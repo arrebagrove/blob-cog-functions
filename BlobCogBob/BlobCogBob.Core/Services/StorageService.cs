@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Threading;
 
 using Microsoft.WindowsAzure.Storage.Queue;
+using BlobCogBob.Shared;
 
 namespace BlobCogBob.Core
 {
@@ -19,8 +20,7 @@ namespace BlobCogBob.Core
     {
         List,
         Read,
-        Write,
-        Queue
+        Write
     }
 
     public class StorageService
@@ -84,27 +84,6 @@ namespace BlobCogBob.Core
             }
 
             return blobAddress;
-        }
-
-        public async static Task WriteToQueue(string contentToWrite)
-        {
-            try
-            {
-                var queueCredentials = await ObtainStorageCredentials(StoragePermissionType.Queue);
-
-                var qsa = new CloudQueueClient(StorageConstants.QueueUri, queueCredentials);
-
-                var menuQueue = qsa.GetQueueReference("menu-queue");
-
-                await menuQueue.CreateIfNotExistsAsync().ConfigureAwait(false);
-
-                var message = new CloudQueueMessage(contentToWrite);
-                await menuQueue.AddMessageAsync(message).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"*** Error {ex.Message}");
-            }
         }
 
         #region Helpers
