@@ -37,6 +37,8 @@ namespace BlobCogBob.Functions
                 }
             }
 
+            log.Info($"**** INFO: Requesting {input.Permission} permissions");
+
             var container = blobDirectory.Container;
 
             var sasToken = string.IsNullOrWhiteSpace(input.BlobName) ? GetContainerSasToken(container, permissions) : GetBlobSasToken(container, input.BlobName, permissions);

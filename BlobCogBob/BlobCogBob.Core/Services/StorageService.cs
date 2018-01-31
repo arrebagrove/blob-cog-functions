@@ -27,34 +27,42 @@ namespace BlobCogBob.Core
     {
         public async static Task<List<MenuBlob>> ListAllBlobs()
         {
-            var listCredentials = await ObtainStorageCredentials(StoragePermissionType.List);
-            var csa = new CloudStorageAccount(listCredentials, StorageConstants.AccountName,
-                                              StorageConstants.AccountUrlSuffix, true);
-
-            var blobClient = csa.CreateCloudBlobClient();
-            var container = blobClient.GetContainerReference(StorageConstants.PhotosContainerName);
-
-            List<MenuBlob> theBlobs = new List<MenuBlob>();
-
-            BlobContinuationToken continuationToken = null;
-            do
+            try
             {
-                var allBlobs = await container.ListBlobsSegmentedAsync("", true,
-                                                                       BlobListingDetails.None, 100,
-                                                                       continuationToken, null, null).ConfigureAwait(false);
+                var listCredentials = await ObtainStorageCredentials(StoragePermissionType.List);
+                var csa = new CloudStorageAccount(listCredentials, StorageConstants.AccountName,
+                                                  StorageConstants.AccountUrlSuffix, true);
 
-                continuationToken = allBlobs.ContinuationToken;
+                var blobClient = csa.CreateCloudBlobClient();
+                var container = blobClient.GetContainerReference(StorageConstants.PhotosContainerName);
 
-                foreach (var blob in allBlobs.Results)
+                List<MenuBlob> theBlobs = new List<MenuBlob>();
+
+                BlobContinuationToken continuationToken = null;
+                do
                 {
-                    if ((blob is CloudBlockBlob cloudBlob))
-                        theBlobs.Add(new MenuBlob { BlobName = cloudBlob.Name, BlobUri = cloudBlob.Uri });
-                }
+                    var allBlobs = await container.ListBlobsSegmentedAsync("", true,
+                                                                           BlobListingDetails.None, 100,
+                                                                           continuationToken, null, null).ConfigureAwait(false);
 
-            } while (continuationToken != null);
+                    continuationToken = allBlobs.ContinuationToken;
+
+                    foreach (var blob in allBlobs.Results)
+                    {
+                        if ((blob is CloudBlockBlob cloudBlob))
+                            theBlobs.Add(new MenuBlob { BlobName = cloudBlob.Name, BlobUri = cloudBlob.Uri });
+                    }
+
+                } while (continuationToken != null);
 
 
-            return theBlobs;
+                return theBlobs;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** ERROR!!! {ex.Message}");
+                return null;
+            }
         }
 
         public async static Task<Uri> UploadBlob(Stream blobContent, UploadProgress progressUpdater)
@@ -106,9 +114,6 @@ namespace BlobCogBob.Core
                     break;
                 case StoragePermissionType.Write:
                     storageToken = await FunctionService.GetContainerWriteSasToken().ConfigureAwait(false);
-                    break;
-                case StoragePermissionType.Queue:
-                    storageToken = await FunctionService.GetQueueSasToken().ConfigureAwait(false);
                     break;
             }
 
