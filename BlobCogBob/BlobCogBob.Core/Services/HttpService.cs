@@ -79,8 +79,9 @@ namespace BlobCogBob.Core.Services
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine($"*** ERROR in HTTPService GET!! {ex.Message}");
                 return default(TDataObject);
             }
         }

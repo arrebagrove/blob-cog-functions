@@ -8,6 +8,8 @@ using System.Web;
 using BlobCogBob.Core.Shared;
 using System.Threading.Tasks;
 
+using System.Text.RegularExpressions;
+
 namespace BlobCogBob.Core
 {
     public class BeerSearchService : HttpService
@@ -26,9 +28,19 @@ namespace BlobCogBob.Core
             builtUrl.Query = query.ToString();
 
 
-            var theBeers = await GetDataObjectFromAPI<List<BreweryDbBeerInfo>, string>(builtUrl.ToString()).ConfigureAwait(false);
+            var theBeers = await GetDataObjectFromAPI<BreweryDbSearchResult, string>(builtUrl.ToString()).ConfigureAwait(false);
 
-            return null;
+            var firstFound = theBeers.Data.FirstOrDefault(ff => Regex.Replace(ff.NameDisplay, @"\s+","") == Regex.Replace(beerName, @"\s+",""));
+            var beerInfo = new BeerInfo
+            {
+                ABV = firstFound.Abv,
+                Description = firstFound.Description,
+                Label = firstFound.Labels.Medium,
+                Style = firstFound.Style.Description,
+                Name = firstFound.NameDisplay
+            };
+
+            return beerInfo;
         }
     }
 }
