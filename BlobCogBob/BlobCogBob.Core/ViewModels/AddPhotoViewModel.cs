@@ -175,7 +175,16 @@ namespace BlobCogBob.Core
                     if (ocrResult != null)
                     {
                         var tempWords = new StringBuilder();
-                        ocrResult.ForEach(ocr => tempWords.AppendLine(ocr.LineText));
+                        //ocrResult.ForEach(ocr => tempWords.AppendLine(ocr.LineText));
+
+                        foreach (var line in ocrResult)
+                        {
+                            tempWords.AppendLine(line.LineText);
+
+                            var beerInfo = await BeerSearchService.FindBeer(line.LineText).ConfigureAwait(false);
+
+                            line.BeerInfo = beerInfo;
+                        }
 
                         ocrPhoto = new PhotoInfo
                         {
@@ -185,15 +194,22 @@ namespace BlobCogBob.Core
                             Longitude = -89,
                             QualityRating = 1,
                             UserId = "1"
+
                         };
 
-                        FoundWords = tempWords.ToString();
-                        SearchResultInfo = found_results_info;
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            FoundWords = tempWords.ToString();
+                            SearchResultInfo = found_results_info;
+                        });
                     }
                     else
                     {
-                        FoundWords = "";
-                        SearchResultInfo = no_results_info;
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            FoundWords = "";
+                            SearchResultInfo = no_results_info;
+                        });
                     }
                 }
                 else

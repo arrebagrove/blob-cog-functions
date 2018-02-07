@@ -12,5 +12,6 @@ namespace BlobCogBob.Shared
         public ImageCoordinate RightBottom { get; set; }
         public ImageCoordinate LeftBottom { get; set; }
         public double Rating { get; set; }
+        public BeerInfo BeerInfo { get; set; }
     }
 }
