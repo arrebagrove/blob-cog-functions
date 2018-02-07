@@ -24,15 +24,9 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!--
-            <lottie:AnimationView IsVisible="{Binding SearchingBeer}" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Loop="true" AutoPlay="true" Animation="beer_bubbles.json" />
-
             <lottie:AnimationView Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Loop="true" 
                                   AutoPlay="true" 
                                   Animation="{Binding CurrentAnimation}" />
-
-                                  IsVisible="{Binding SearchComplete, Converter={StaticResource AniNameConvert}}"/>
-                                  -->
             
             <Image Grid.ColumnSpan="2" Source="{Binding TheImage}" Aspect="AspectFill" />
             <ProgressBar IsVisible="{Binding UploadInProgress}" BackgroundColor="#5e2a7e" Grid.Row="0" Grid.ColumnSpan="2" Progress="{Binding UploadProgress}" />

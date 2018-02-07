@@ -113,7 +113,7 @@ namespace BlobCogBob.Core
 
         #endregion
 
-        #region Command Properties
+        #region Cancel Command
 
         ICommand _cancelCommand;
         public ICommand Cancel => _cancelCommand ??
@@ -123,6 +123,10 @@ namespace BlobCogBob.Core
         {
             await NavigationService.Instance.PopModalAsync();
         }
+
+        #endregion
+
+        #region Save Command
 
         ICommand _saveCommand;
         public ICommand Save => _saveCommand ??
@@ -142,6 +146,10 @@ namespace BlobCogBob.Core
                 Device.BeginInvokeOnMainThread(async () =>
                     await Application.Current.MainPage.DisplayAlert("Error", "Error saving info to queue, try again", "OK"));
         }
+
+        #endregion
+
+        #region Take Photo Command
 
         ICommand _takePhotoCommand;
         public ICommand TakePhoto => _takePhotoCommand ??
@@ -231,7 +239,6 @@ namespace BlobCogBob.Core
 
                         Device.BeginInvokeOnMainThread(() =>
                         {
-                            CurrentAnimation = "";
                             FoundWords = tempWords.ToString();
                             SearchResultInfo = found_results_info;
                         });
@@ -255,13 +262,18 @@ namespace BlobCogBob.Core
             }
             finally
             {
-                SearchComplete = true;
-                SearchInProgress = false;
-                //CurrentAnimation = "na";
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    SearchComplete = true;
+                    SearchInProgress = false;
+                    CurrentAnimation = "na";
+                });
             }
         }
 
         #endregion
+
+        #region Misc
 
         void UpdateImageUploadProgress(object sender, double e)
         {
@@ -285,5 +297,7 @@ namespace BlobCogBob.Core
 
             return takePhotoResult == take_photo;
         }
+
+        #endregion
     }
 }
