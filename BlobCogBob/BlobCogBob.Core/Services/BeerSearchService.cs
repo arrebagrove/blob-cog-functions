@@ -9,6 +9,7 @@ using BlobCogBob.Core.Shared;
 using System.Threading.Tasks;
 
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace BlobCogBob.Core
 {
@@ -17,34 +18,44 @@ namespace BlobCogBob.Core
 
         public async static Task<BeerInfo> FindBeer(string beerName)
         {
-            // Build the url
-            var builtUrl = new UriBuilder(BackendConstants.BreweryDbSearchUrl);
-            var query = HttpUtility.ParseQueryString(builtUrl.Query);
-            query["key"] = APIKeys.BreweryDbAPIKey;
-            query["format"] = "json";
-            query["t"] = "beer";
-            query["q"] = beerName;
+            if (string.IsNullOrEmpty(beerName))
+                return null;
 
-            builtUrl.Query = query.ToString();
-
-            var beerNameNoWhiteSpace = beerName.StripWhitespaces().ToUpper();
-
-            var theBeers = await GetDataObjectFromAPI<BreweryDbSearchResult, string>(builtUrl.ToString()).ConfigureAwait(false);
-
-            var firstFound = theBeers.Data.FirstOrDefault(ff => ff.NameDisplay.StripWhitespaces().ToUpper() == beerNameNoWhiteSpace);
-
-            if (firstFound != null)
+            try
             {
-                var beerInfo = new BeerInfo
-                {
-                    ABV = firstFound.Abv,
-                    Description = firstFound.Description,
-                    Label = firstFound.Labels.Medium,
-                    Style = firstFound.Style.Description,
-                    Name = firstFound.NameDisplay
-                };
+                // Build the url
+                var builtUrl = new UriBuilder(BackendConstants.BreweryDbSearchUrl);
+                var query = HttpUtility.ParseQueryString(builtUrl.Query);
+                query["key"] = APIKeys.BreweryDbAPIKey;
+                query["format"] = "json";
+                query["t"] = "beer";
+                query["q"] = beerName;
 
-                return beerInfo;
+                builtUrl.Query = query.ToString();
+
+                var beerNameNoWhiteSpace = beerName.StripWhitespaces().ToUpper();
+
+                var theBeers = await GetDataObjectFromAPI<BreweryDbSearchResult, string>(builtUrl.ToString()).ConfigureAwait(false);
+
+                var firstFound = theBeers.Data.FirstOrDefault(ff => ff.NameDisplay.StripWhitespaces().ToUpper() == beerNameNoWhiteSpace);
+
+                if (firstFound != null)
+                {
+                    var beerInfo = new BeerInfo
+                    {
+                        ABV = firstFound.Abv,
+                        Description = firstFound.Description,
+                        Label = firstFound.Labels.Medium,
+                        Style = firstFound.Style.Description,
+                        Name = firstFound.NameDisplay
+                    };
+
+                    return beerInfo;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** ERROR: {ex.Message}");
             }
 
             return null;
@@ -55,6 +66,9 @@ namespace BlobCogBob.Core
     {
         public static string StripWhitespaces(this string input)
         {
+            if (string.IsNullOrWhiteSpace(input))
+                return "";
+
             return Regex.Replace(input, @"\s+", "");
         }
     }

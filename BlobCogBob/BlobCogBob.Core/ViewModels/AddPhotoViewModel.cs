@@ -41,6 +41,16 @@ namespace BlobCogBob.Core
             }
         }
 
+        bool uploadInProgress;
+        public bool UploadInProgress
+        {
+            get => uploadInProgress;
+            set
+            {
+                SetProperty(ref uploadInProgress, value);
+            }
+        }
+
         string foundWords;
         public string FoundWords
         {
@@ -148,9 +158,13 @@ namespace BlobCogBob.Core
                 progressUpdater.Updated += UpdateImageUploadProgress;
 
                 var shouldTakeNewPhoto = await ShouldTakeNewPhoto();
+                if (!shouldTakeNewPhoto.HasValue)
+                    return;
+
 
                 MediaFile thePhoto = null;
-                if (shouldTakeNewPhoto)
+
+                if (shouldTakeNewPhoto.Value)
                     thePhoto = await MediaService.GetMediaFileFromCamera().ConfigureAwait(false);
                 else
                     thePhoto = await MediaService.GetMediaFileFromLibrary().ConfigureAwait(false);
@@ -161,9 +175,11 @@ namespace BlobCogBob.Core
                 Uri blobAddress;
                 using (var mediaStream = MediaService.GetPhotoStream(thePhoto, false))
                 {
+                    UploadInProgress = true;
                     TheImage = ImageSource.FromStream(() => MediaService.GetPhotoStream(thePhoto, true));
                     progressUpdater.TotalImageBytes = mediaStream.Length;
                     blobAddress = await StorageService.UploadBlob(mediaStream, progressUpdater).ConfigureAwait(false);
+                    UploadInProgress = false;
                 }
 
                 progressUpdater.Updated -= UpdateImageUploadProgress;
@@ -182,6 +198,11 @@ namespace BlobCogBob.Core
                             tempWords.AppendLine(line.LineText);
 
                             var beerInfo = await BeerSearchService.FindBeer(line.LineText).ConfigureAwait(false);
+
+                            if (beerInfo != null)
+                            {
+                                Debug.WriteLine(beerInfo.Description);
+                            }
 
                             line.BeerInfo = beerInfo;
                         }
@@ -234,7 +255,7 @@ namespace BlobCogBob.Core
             UploadProgress = e;
         }
 
-        async Task<bool> ShouldTakeNewPhoto()
+        async Task<bool?> ShouldTakeNewPhoto()
         {
             const string take_photo = "Take Photo";
             string takePhotoResult = default(string);
@@ -245,6 +266,9 @@ namespace BlobCogBob.Core
                null,
                 new string[] { "Take Photo", "Pick Photo" }
             );
+
+            if (takePhotoResult == "Cancel")
+                return null;
 
             return takePhotoResult == take_photo;
         }

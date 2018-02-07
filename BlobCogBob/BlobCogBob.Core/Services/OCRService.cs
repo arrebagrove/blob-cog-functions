@@ -36,6 +36,7 @@ namespace BlobCogBob.Core
                 while (opResult.Status != TextOperationStatusCodes.Succeeded && opResult.Status != TextOperationStatusCodes.Failed)
                 {
                     opResult = await vision.GetTextOperationResultAsync(operationId).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
                 }
 
                 if (opResult.Status == TextOperationStatusCodes.Failed)

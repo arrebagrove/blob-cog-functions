@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 
 using Xamarin.Forms;
+using System.Net.Http.Headers;
 
 namespace BlobCogBob.Core
 {
@@ -14,7 +15,9 @@ namespace BlobCogBob.Core
 
             MonkeyCache.FileStore.Barrel.ApplicationId = "blobcogbob";
 
-            MainPage = new NavigationPage(new MenusList { ViewModel = new MenusListViewModel() });
+            MainPage = new NavigationPage(new AddPhotoPage { ViewModel = new AddPhotoViewModel() });
+
+            //MainPage = new NavigationPage(new MenusList { ViewModel = new MenusListViewModel() });
         }
     }
 }
