@@ -27,20 +27,35 @@ namespace BlobCogBob.Core
 
             builtUrl.Query = query.ToString();
 
+            var beerNameNoWhiteSpace = beerName.StripWhitespaces().ToUpper();
 
             var theBeers = await GetDataObjectFromAPI<BreweryDbSearchResult, string>(builtUrl.ToString()).ConfigureAwait(false);
 
-            var firstFound = theBeers.Data.FirstOrDefault(ff => Regex.Replace(ff.NameDisplay, @"\s+","") == Regex.Replace(beerName, @"\s+",""));
-            var beerInfo = new BeerInfo
-            {
-                ABV = firstFound.Abv,
-                Description = firstFound.Description,
-                Label = firstFound.Labels.Medium,
-                Style = firstFound.Style.Description,
-                Name = firstFound.NameDisplay
-            };
+            var firstFound = theBeers.Data.FirstOrDefault(ff => ff.NameDisplay.StripWhitespaces().ToUpper() == beerNameNoWhiteSpace);
 
-            return beerInfo;
+            if (firstFound != null)
+            {
+                var beerInfo = new BeerInfo
+                {
+                    ABV = firstFound.Abv,
+                    Description = firstFound.Description,
+                    Label = firstFound.Labels.Medium,
+                    Style = firstFound.Style.Description,
+                    Name = firstFound.NameDisplay
+                };
+
+                return beerInfo;
+            }
+
+            return null;
+        }
+    }
+
+    public static class StringExtensions
+    {
+        public static string StripWhitespaces(this string input)
+        {
+            return Regex.Replace(input, @"\s+", "");
         }
     }
 }

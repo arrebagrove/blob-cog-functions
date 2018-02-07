@@ -181,7 +181,7 @@ namespace BlobCogBob.Core
                         {
                             tempWords.AppendLine(line.LineText);
 
-                            var beerInfo = await BeerSearchService.FindBeer(line.LineText);
+                            var beerInfo = await BeerSearchService.FindBeer(line.LineText).ConfigureAwait(false);
 
                             line.BeerInfo = beerInfo;
                         }
@@ -197,13 +197,19 @@ namespace BlobCogBob.Core
 
                         };
 
-                        FoundWords = tempWords.ToString();
-                        SearchResultInfo = found_results_info;
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            FoundWords = tempWords.ToString();
+                            SearchResultInfo = found_results_info;
+                        });
                     }
                     else
                     {
-                        FoundWords = "";
-                        SearchResultInfo = no_results_info;
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            FoundWords = "";
+                            SearchResultInfo = no_results_info;
+                        });
                     }
                 }
                 else
