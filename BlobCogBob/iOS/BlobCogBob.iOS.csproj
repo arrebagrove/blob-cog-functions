@@ -158,6 +158,15 @@
     <Reference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision">
       <HintPath>..\packages\Microsoft.Azure.CognitiveServices.Vision.ComputerVision.1.0.2-preview\lib\netstandard1.4\Microsoft.Azure.CognitiveServices.Vision.ComputerVision.dll</HintPath>
     </Reference>
+    <Reference Include="Lottie.iOS">
+      <HintPath>..\packages\Com.Airbnb.iOS.Lottie.2.1.5.0\lib\xamarinios\Lottie.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Lottie.Forms">
+      <HintPath>..\packages\Com.Airbnb.Xamarin.Forms.Lottie.2.4.1\lib\xamarinios\Lottie.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="Lottie.Forms.iOS">
+      <HintPath>..\packages\Com.Airbnb.Xamarin.Forms.Lottie.2.4.1\lib\xamarinios\Lottie.Forms.iOS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
@@ -187,6 +196,10 @@
       <Project>{B740C9EF-D291-4C26-8672-79DA98705643}</Project>
       <Name>BlobCogBob.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\beer_bubbles.json" />
+    <BundleResource Include="Resources\loading.json" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.5.0.122203\build\netstandard1.0\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.5.0.122203\build\netstandard1.0\Xamarin.Forms.targets')" />

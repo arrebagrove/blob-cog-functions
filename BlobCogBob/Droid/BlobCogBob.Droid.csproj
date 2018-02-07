@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BlobCogBob.Droid</RootNamespace>
     <AssemblyName>BlobCogBob.Droid</AssemblyName>
-    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
@@ -175,6 +175,15 @@
     </Reference>
     <Reference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision">
       <HintPath>..\packages\Microsoft.Azure.CognitiveServices.Vision.ComputerVision.1.0.2-preview\lib\netstandard1.4\Microsoft.Azure.CognitiveServices.Vision.ComputerVision.dll</HintPath>
+    </Reference>
+    <Reference Include="Lottie">
+      <HintPath>..\packages\Com.Airbnb.Android.Lottie.2.3.1.0\lib\MonoAndroid40\Lottie.dll</HintPath>
+    </Reference>
+    <Reference Include="Lottie.Forms">
+      <HintPath>..\packages\Com.Airbnb.Xamarin.Forms.Lottie.2.4.1\lib\MonoAndroid70\Lottie.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="Lottie.Forms.Droid">
+      <HintPath>..\packages\Com.Airbnb.Xamarin.Forms.Lottie.2.4.1\lib\MonoAndroid70\Lottie.Forms.Droid.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

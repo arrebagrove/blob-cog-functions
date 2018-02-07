@@ -25,11 +25,21 @@ namespace BlobCogBob.Core
         public AddPhotoViewModel()
         {
             Title = "Add Photo";
-            SearchComplete = false;
+            SearchComplete = true;
             SearchInProgress = false;
         }
 
         #region Properties
+
+        string currentAnimation;
+        public string CurrentAnimation
+        {
+            get => currentAnimation;
+            set
+            {
+                SetProperty(ref currentAnimation, value);
+            }
+        }
 
         double uploadProgress;
         public double UploadProgress
@@ -141,7 +151,6 @@ namespace BlobCogBob.Core
         {
             if (SearchInProgress)
                 return;
-
             try
             {
                 SearchInProgress = true;
@@ -175,6 +184,7 @@ namespace BlobCogBob.Core
                 Uri blobAddress;
                 using (var mediaStream = MediaService.GetPhotoStream(thePhoto, false))
                 {
+                    CurrentAnimation = "loading.json";
                     UploadInProgress = true;
                     TheImage = ImageSource.FromStream(() => MediaService.GetPhotoStream(thePhoto, true));
                     progressUpdater.TotalImageBytes = mediaStream.Length;
@@ -191,7 +201,8 @@ namespace BlobCogBob.Core
                     if (ocrResult != null)
                     {
                         var tempWords = new StringBuilder();
-                        //ocrResult.ForEach(ocr => tempWords.AppendLine(ocr.LineText));
+
+                        CurrentAnimation = "beer_bubbles.json";
 
                         foreach (var line in ocrResult)
                         {
@@ -220,6 +231,7 @@ namespace BlobCogBob.Core
 
                         Device.BeginInvokeOnMainThread(() =>
                         {
+                            CurrentAnimation = "";
                             FoundWords = tempWords.ToString();
                             SearchResultInfo = found_results_info;
                         });
@@ -245,6 +257,7 @@ namespace BlobCogBob.Core
             {
                 SearchComplete = true;
                 SearchInProgress = false;
+                //CurrentAnimation = "na";
             }
         }
 

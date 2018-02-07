@@ -2,9 +2,15 @@
 <ContentPage 
     xmlns="http://xamarin.com/schemas/2014/forms" 
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-    xmlns:entryCustomReturn="clr-namespace:EntryCustomReturn.Forms.Plugin.Abstractions;assembly=EntryCustomReturn.Forms.Plugin.Abstractions"
+    xmlns:local="clr-namespace:BlobCogBob.Core"
+    xmlns:lottie="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
     x:Class="BlobCogBob.Core.AddPhotoPage"
     Title="{Binding Title}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:AnimationToBoolConverter x:Key="AniNameConvert" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -18,6 +24,16 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
+            <!--
+            <lottie:AnimationView IsVisible="{Binding SearchingBeer}" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Loop="true" AutoPlay="true" Animation="beer_bubbles.json" />
+
+            <lottie:AnimationView Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Loop="true" 
+                                  AutoPlay="true" 
+                                  Animation="{Binding CurrentAnimation}" />
+
+                                  IsVisible="{Binding SearchComplete, Converter={StaticResource AniNameConvert}}"/>
+                                  -->
+            
             <Image Grid.ColumnSpan="2" Source="{Binding TheImage}" Aspect="AspectFill" />
             <ProgressBar IsVisible="{Binding UploadInProgress}" BackgroundColor="#5e2a7e" Grid.Row="0" Grid.ColumnSpan="2" Progress="{Binding UploadProgress}" />
             <Label Text="{Binding SearchResultInfo}" IsVisible="{Binding SearchComplete}" FontAttributes="Italic" Grid.Row="1" Grid.ColumnSpan="2" Margin="10" />

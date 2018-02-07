@@ -8,6 +8,7 @@ using UIKit;
 using BlobCogBob.Core;
 
 using CodeMill.VMFirstNav;
+using Lottie.Forms.iOS.Renderers;
 
 namespace BlobCogBob.iOS
 {
@@ -18,9 +19,9 @@ namespace BlobCogBob.iOS
         {
             global::Xamarin.Forms.Forms.Init();
 
-            LoadApplication(new App());
+            AnimationViewRenderer.Init();
 
-            EntryCustomReturn.Forms.Plugin.iOS.CustomReturnEntryRenderer.Init();
+            LoadApplication(new App());
 
             NavigationService.Instance.RegisterViewModels(typeof(App).Assembly);
 

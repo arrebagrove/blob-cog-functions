@@ -12,6 +12,7 @@ using BlobCogBob.Core;
 
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
+using Lottie.Forms.Droid;
 
 namespace BlobCogBob.Droid
 {
@@ -27,7 +28,7 @@ namespace BlobCogBob.Droid
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
-            EntryCustomReturn.Forms.Plugin.Android.CustomReturnEntryRenderer.Init();
+            AnimationViewRenderer.Init();
 
             LoadApplication(new App());
         }
