@@ -2,15 +2,10 @@
 <ContentPage 
     xmlns="http://xamarin.com/schemas/2014/forms" 
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-    xmlns:local="clr-namespace:BlobCogBob.Core"
     xmlns:lottie="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
     x:Class="BlobCogBob.Core.AddPhotoPage"
     Title="{Binding Title}">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <local:AnimationToBoolConverter x:Key="AniNameConvert" />
-        </ResourceDictionary>
-    </ContentPage.Resources>
+
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
@@ -28,15 +23,58 @@
                                   AutoPlay="true" 
                                   Animation="{Binding CurrentAnimation}" />
             
-            <Image Grid.ColumnSpan="2" Source="{Binding TheImage}" Aspect="AspectFill" />
+            <Image Grid.ColumnSpan="2" Source="{Binding TheImage}" Aspect="AspectFit" />
             <ProgressBar IsVisible="{Binding UploadInProgress}" BackgroundColor="#5e2a7e" Grid.Row="0" Grid.ColumnSpan="2" Progress="{Binding UploadProgress}" />
             <Label Text="{Binding SearchResultInfo}" IsVisible="{Binding SearchComplete}" FontAttributes="Italic" Grid.Row="1" Grid.ColumnSpan="2" Margin="10" />
             <ScrollView Grid.Row="2" Grid.ColumnSpan="2">
                 <Label Text="{Binding FoundWords}" FontSize="Medium" LineBreakMode="WordWrap" Margin="10" />
             </ScrollView>
-            <Button Text="Take Photo" Command="{Binding TakePhoto}" BackgroundColor="#5e2a7e" TextColor="White" BorderRadius="0" Grid.Row="3" Grid.ColumnSpan="2" />
+            <Button Text="Upload Menu" Command="{Binding TakePhoto}" BackgroundColor="#5e2a7e" TextColor="White" BorderRadius="0" Grid.Row="3" Grid.ColumnSpan="2" />
         </Grid>
-</ContentPage.Content>
-    <ContentPage.ToolbarItems>
-    </ContentPage.ToolbarItems>
+    </ContentPage.Content>
 </ContentPage>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+
+
+<lottie:AnimationView Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" 
+                                  Loop="true" 
+                                  AutoPlay="true" 
+                                  Animation="{Binding CurrentAnimation}" />
+
+
+
+            -->
+
+
+
+
+
+
+
+            

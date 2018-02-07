@@ -22,7 +22,7 @@ namespace BlobCogBob.Droid
             RegisterActivityLifecycleCallbacks(this);
             //A great place to initialize Xamarin.Insights and Dependency Services!
 
-            Plugin.CurrentActivity.CrossCurrentActivity.Current.Activity = this;
+            Plugin.CurrentActivity.CrossCurrentActivity.Current.Activity = this.ApplicationContext as Activity;
         }
 
         public override void OnTerminate()
